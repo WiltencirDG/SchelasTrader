@@ -1,7 +1,7 @@
 const puppeteer = require('puppeteer')
 const credentials = require('../credentials/investing.json')
 
-async function robot(emitter){
+async function robot(emitter,ticker){
         
     const chrome = await openChrome()
     const page = await openNewPage(chrome)
@@ -52,7 +52,7 @@ async function robot(emitter){
         await page.type('#loginForm_password', credentials.password);
         
 
-        console.time('Took')
+        //console.time('Took')
         await page.evaluate(()=>{
             loginFunctions.submitLogin();
         })
@@ -61,11 +61,11 @@ async function robot(emitter){
             await page.waitForNavigation({timeout: 25000});
 
         }catch(error){
-            console.timeEnd('Took')
+            //console.timeEnd('Took')
             throw new Error('unavailable')
         }
 
-        console.timeEnd('Took')
+        //console.timeEnd('Took')
         console.log('> You\'re logged in.')
     }
     
@@ -80,10 +80,10 @@ async function robot(emitter){
         const elementHandle = await page.$('iframe',);
         const frame = await elementHandle.contentFrame();
 
-        await page.waitFor(3000)
+        await page.waitFor(2000)
 
         await frame.click('span.load')
-        await page.waitFor(1000)
+        await page.waitFor(3000)
         //await frame.click('div[text="LayoutBOT"]')
 
         const linkHandlers = await frame.$x("//div[contains(text(), 'LayoutBOT')]");
@@ -92,7 +92,7 @@ async function robot(emitter){
         await page.waitFor(1000)
 
         await frame.click("input.symbol-edit")
-        await frame.type("input.symbol-edit","PETR4")
+        await frame.type("input.symbol-edit",ticker.price)
         await page.keyboard.type(String.fromCharCode(13));
     }
 

@@ -4,13 +4,29 @@ const robots = {
     worker: require('./robots/worker.js')
 }
 
-const emitter = new eventEmitter();
-emitter.setMaxListeners(2)
+
+
+const tickers = [{
+    price: "BIDI4",
+    buy: "BIDI4F"
+},
+{
+    price: "PETR4",
+    buy: "PETR4F"
+},
+{
+    price: "VALE3",
+    buy: "VALE3F"
+}]
 
 async function start(){
     
-    await robots.priceChrome(emitter)
-    await robots.worker(emitter)
+    tickers.forEach(async (ticker) => {
+        
+        let emitter = new eventEmitter();
+        await robots.priceChrome(emitter,ticker)
+        await robots.worker(emitter)
+    });
 
 }
 
