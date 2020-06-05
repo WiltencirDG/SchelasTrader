@@ -17,6 +17,7 @@
   },
   "homepage": "https://github.com/WiltencirDG/SchelasTrader#readme",
   "dependencies": {
+    "death": "^1.1.0",
     "puppeteer": "^3.3.0"
   }
 }

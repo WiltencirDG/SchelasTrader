@@ -1,7 +1,7 @@
 const puppeteer = require('puppeteer')
 const credentials = require('../credentials/investing.json')
 
-async function robot(){
+async function robot(emitter){
         
     const chrome = await openChrome()
     const page = await openNewPage(chrome)
@@ -10,7 +10,10 @@ async function robot(){
     await navigateToTrackPage(page)
     await setTickerAsActive(page)
     
-    //await getMovingAverage(page)
+    emitter.on("getMovingAverage", async (movingAverages)=>{
+        await getMovingAverage(page, movingAverages)
+        emitter.emit('readPrice',movingAverages)
+    })
 
     async function openChrome(){
         console.log('> Opening Google Chrome...')
@@ -40,7 +43,7 @@ async function robot(){
         try{
             await page.click('i.popupCloseIcon');
         }catch(error){
-            console.log('not a popup aberto')
+            
         }
 
         await page.click('a.login');
@@ -89,14 +92,13 @@ async function robot(){
         await page.waitFor(1000)
 
         await frame.click("input.symbol-edit")
-        await frame.type("input.symbol-edit","BIDI4")
+        await frame.type("input.symbol-edit","PETR4")
         await page.keyboard.type(String.fromCharCode(13));
-        global.globalPage = page
     }
 
-    async function getMovingAverage(){
-        console.log('> Getting Strategy...')
-        console.time('Price')
+    async function getMovingAverage(page, movingAverages){
+        //console.log('> Getting Strategy...')
+        //console.time('Price')
         const elementHandle = await page.$('iframe',);
         const frame = await elementHandle.contentFrame();
         let mediaCompra = 0
@@ -104,44 +106,20 @@ async function robot(){
 
         await page.waitFor(750)
 
-        const movingAverages = await frame.$$eval('div.pane-legend > div > div > span > span.pane-legend-item-value', (averages) => {
+        const movingAveragesS = await frame.$$eval('div.pane-legend > div > div > span > span.pane-legend-item-value', (averages) => {
             const result = averages.map(average => average.innerText)        
             return result
         });
 
-        mediaCompra = movingAverages[4]
-        mediaVenda = movingAverages[5]
+        mediaCompra = movingAveragesS[4]
+        mediaVenda = movingAveragesS[5]
 
-        console.timeEnd('Price')
-        return {mediaCompra, mediaVenda}
+        //console.timeEnd('Price')
+        movingAverages.mediaCompra = mediaCompra
+        movingAverages.mediaVenda = mediaVenda
+
+        //return movingAverages
+        //return {mediaCompra, mediaVenda}
     }
 }
-
-async function getMovingAverage(page){
-    
-    console.log(page)
-    console.log('> Getting Strategy...')
-    console.time('Price')
-    const elementHandle = await page.$('iframe',);
-    const frame = await elementHandle.contentFrame();
-    let mediaCompra = 0
-    let mediaVenda = 0
-
-    await page.waitFor(750)
-
-    const movingAverages = await frame.$$eval('div.pane-legend > div > div > span > span.pane-legend-item-value', (averages) => {
-        const result = averages.map(average => average.innerText)        
-        return result
-    });
-
-    mediaCompra = movingAverages[4]
-    mediaVenda = movingAverages[5]
-
-    console.timeEnd('Price')
-    return {mediaCompra, mediaVenda}
-}
-
-module.exports = {
-    robot,
-    getMovingAverage
-} 
+module.exports = robot
