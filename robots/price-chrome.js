@@ -23,7 +23,7 @@ async function robot(emitter,ticker){
             '--disable-web-security',
             '--disable-features=IsolateOrigins,site-per-process'
           ],timeout: 60000
-          , headless: false, defaultViewport: null
+          //, headless: false, defaultViewport: null
         })
         return chrome
     }   
@@ -51,8 +51,6 @@ async function robot(emitter,ticker){
         await page.type('#loginFormUser_email', credentials.login);
         await page.type('#loginForm_password', credentials.password);
         
-
-        //console.time('Took')
         await page.evaluate(()=>{
             loginFunctions.submitLogin();
         })
@@ -61,11 +59,9 @@ async function robot(emitter,ticker){
             await page.waitForNavigation({timeout: 25000});
 
         }catch(error){
-            //console.timeEnd('Took')
             throw new Error('unavailable')
         }
 
-        //console.timeEnd('Took')
         console.log('> You\'re logged in.')
     }
     
@@ -84,7 +80,6 @@ async function robot(emitter,ticker){
 
         await frame.click('span.load')
         await page.waitFor(3000)
-        //await frame.click('div[text="LayoutBOT"]')
 
         const linkHandlers = await frame.$x("//div[contains(text(), 'LayoutBOT')]");
         await linkHandlers[0].click();
@@ -97,8 +92,6 @@ async function robot(emitter,ticker){
     }
 
     async function getMovingAverage(page, movingAverages){
-        //console.log('> Getting Strategy...')
-        //console.time('Price')
         const elementHandle = await page.$('iframe',);
         const frame = await elementHandle.contentFrame();
         let mediaCompra = 0
@@ -114,12 +107,9 @@ async function robot(emitter,ticker){
         mediaCompra = movingAveragesS[4]
         mediaVenda = movingAveragesS[5]
 
-        //console.timeEnd('Price')
         movingAverages.mediaCompra = mediaCompra
         movingAverages.mediaVenda = mediaVenda
 
-        //return movingAverages
-        //return {mediaCompra, mediaVenda}
     }
 }
 module.exports = robot

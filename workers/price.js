@@ -14,6 +14,8 @@ let lucro = 0
 let numBuys = 0
 let noBuys = 0
 
+let ticker = workerData
+
 const movingAverages = {
     mediaCompra: 0 ,
     mediaVenda: 0
@@ -50,6 +52,7 @@ function check(movingAverages){
     mediaVenda = movingAverages.mediaVenda
     
     if(mediaCompra > mediaVenda && !comprado){
+        parentPort.postMessage(`buy:5 ${ticker} por R$${mediaCompra}`)
         console.log(`> Buy: ${mediaCompra}`)
         comprado = true
         precoComprado = mediaCompra
@@ -57,7 +60,8 @@ function check(movingAverages){
         noBuys = 0
     }
     
-    if(mediaVenda > mediaCompra && comprado){ 
+    if(mediaVenda > mediaCompra && comprado){
+        parentPort.postMessage(`sell:5 ${ticker} por ${mediaVenda}`)
         console.log(`> Sell: ${mediaVenda}`)
         comprado = false
         noBuys = 0

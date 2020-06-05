@@ -1,6 +1,6 @@
 const {Worker, parentPort, workerData} = require('worker_threads')
 
-const ticker = workerData
+const ticker = workerData.ticker
 
 async function worker(){
 

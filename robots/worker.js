@@ -2,15 +2,20 @@ const {Worker, parentPort, workerData} = require('worker_threads')
 const priceWorkerPath = './workers/price.js' 
 const tradeWorkerPath = './workers/trade.js' 
 
-async function robot(emitter){
-    const ticker = ''
-    const priceWorker = new Worker(priceWorkerPath, {workerData: ticker });
-    const tradeWorker = new Worker(tradeWorkerPath, {workerData: ticker });
+async function robot(emitter,ticker){
+    
+    const priceWorker = new Worker(priceWorkerPath, {workerData: ticker.buy });
+    const tradeWorker = new Worker(tradeWorkerPath, {workerData: ticker.buy });
     
     priceWorker.on('message', (result) => {
-        
-        emitter.emitObject("getMovingAverage", result)
-        
+        try{
+            if(result.indexOf(':') > -1){
+                emitter.emit('notification',result)
+            }            
+        }catch(error){
+            emitter.emitObject("getMovingAverage", result)
+
+        }        
     })
 
     emitter.on('readPrice',(movingAverage)=>{

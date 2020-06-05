@@ -1,7 +1,8 @@
 const eventEmitter = require('./event/emitter.js')
 const robots = {
     priceChrome: require('./robots/price-chrome.js'),
-    worker: require('./robots/worker.js')
+    worker: require('./robots/worker.js'),
+    whatsNotification: require('./robots/whats-notification.js')
 }
 
 
@@ -24,8 +25,9 @@ async function start(){
     tickers.forEach(async (ticker) => {
         
         let emitter = new eventEmitter();
+        await robots.whatsNotification(emitter)
         await robots.priceChrome(emitter,ticker)
-        await robots.worker(emitter)
+        await robots.worker(emitter, ticker)
     });
 
 }
