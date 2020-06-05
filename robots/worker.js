@@ -1,20 +1,15 @@
 const {Worker, parentPort, workerData} = require('worker_threads')
-const priceWorker = './workers/price.js'
+const priceWorkerPath = './workers/price.js' 
+const tradeWorkerPath = './workers/trade.js' 
 const ticker = "BIDI4F"
 
 async function robot(){
     
-    const worker = new Worker(priceWorker, {workerData: ticker });
+    const priceWorker = new Worker(priceWorkerPath, {workerData: { ticker,globalPage:global.globalPage} });
+    const tradeWorker = new Worker(tradeWorkerPath, {workerData: ticker });
     
-    worker.on('message', (result) => {
-        if(result.split(':')[0] == "buy"){
-            console.log(`COMPRE ${ticker}`);
-            
-        }else if(result.split(':')[0] == "sell"){
-            console.log(`VENDA ${ticker}`);
-        }
-        //console.log(result)
-        //SEND MESSAGE THROUGH SOCKET
+    priceWorker.on('message', (result) => {
+        tradeWorker.postMessage(result)
     })
     
 }

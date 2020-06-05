@@ -1,18 +1,14 @@
 
 const robots = {
-    chrome: require('./robots/chrome.js'),
+    priceChrome: require('./robots/price-chrome.js'),
     worker: require('./robots/worker.js'),
     //price: require('./workers/price.js')
 }
 
 async function start(){
     
-    //await robots.chrome() // WEBSOCKETSSSSS => LISTEN PRA COMPRAR E VENDER
+    await robots.priceChrome.robot() // WEBSOCKETSSSSS => LISTEN PRA COMPRAR E VENDER
     await robots.worker()
-    
-    // WORKER -> THREAD DO PREÇO. MANDA COMPRAR E VENDER
-
-    
 
 }
 

@@ -8,7 +8,7 @@ async function robot(){
     await navigateToClear(page)
     await loginToClear(page)
     await navigateToAssets(page)
-    await closeChrome(chrome)
+    //await closeChrome(chrome)
 
     async function openChrome(){
         console.log('> Opening Google Chrome...')

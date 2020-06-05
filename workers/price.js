@@ -1,49 +1,51 @@
 const {Worker, parentPort, workerData} = require('worker_threads')
+const priceRobot = require('../robots/price-chrome.js').getMovingAverage
 
-const ticker = workerData
+const ticker = workerData.ticker
 
 let stopTrade
-let price, oldPrice = 0 
+
+let mediaCompra
+let mediaVenda
+
 let comprado = false
 let vendido = false
+
 let lucro = 0
 let numBuys = 0
 let noBuys = 0
 
-async function that(){
+let movingAverages
+
+async function price(){
     while(!stopTrade){
         
-        await new Promise(resolve => setTimeout(resolve, 5000));
-        await check()
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        movingAverages = await priceRobot(workerData.globalPage)
+        await check(movingAverages)
     }
 }
 
-function check(){
+function check(movingAverages){
     console.log('checking')
-    price = Math.ceil(Math.random() * 100)* Math.ceil(Math.random())
     
-    if(oldPrice < price && !comprado){
-        parentPort.postMessage(`buy:${price}`)
+    mediaCompra = movingAverages.mediaCompra
+    mediaVenda = movingAverages.mediaVenda
+    
+    if(mediaCompra > mediaVenda && !comprado){
+        parentPort.postMessage(`buy:${ticker}`)
         comprado = true
-        //lucro += (price - oldPrice)
-        oldPrice = price
         numBuys++
         noBuys = 0
     }
 
-    if(oldPrice < price && comprado){ 
-        parentPort.postMessage(`sell:${price}`)
+    if(mediaVenda > mediaCompra && comprado){ 
+        parentPort.postMessage(`sell:${ticker}`)
         comprado = false
-
-        lucro += (price - oldPrice)
-        //parentPort.postMessage(`lucro:${lucro}`)
         noBuys = 0
     }
     
-    
-    //parentPort.postMessage(`no:trade`)
-
-    if(lucro < -1 || noBuys > 40){
+    if(noBuys > 5){
         stopTrade = true
     }
 
@@ -52,5 +54,4 @@ function check(){
     }
 }
 
-that()
-console.log(lucro)
+price()
