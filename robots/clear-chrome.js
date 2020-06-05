@@ -8,7 +8,6 @@ async function robot(){
     await navigateToClear(page)
     await loginToClear(page)
     await navigateToAssets(page)
-    //await closeChrome(chrome)
 
     async function openChrome(){
         console.log('> Opening Google Chrome...')
@@ -16,7 +15,7 @@ async function robot(){
             '--no-sandbox',
             '--disable-setuid-sandbox'
           ],timeout: 60000
-          //, headless: false, defaultViewport: null
+          , headless: false, defaultViewport: null
         })
         return chrome
     }   
@@ -32,35 +31,34 @@ async function robot(){
 
     async function loginToClear(page){
         console.log('> Logging in to Clear...')
+
         await page.type('#identificationNumber', credentials.cpf);
+        page.waitFor(500)
         await page.type('#password', credentials.password);
+        page.waitFor(500)
         await page.type('#dob', credentials.dateofbirth);
 
-        
-        console.time('Took')
+        page.waitFor(3000)
+
         await page.click('input[type="submit"]');
     
         try{
             await page.waitForNavigation({timeout: 25000});
-
         }catch(error){
-            console.timeEnd('Took')
-            console.log('> Sadly, Clear is unavailable right now. Please, try again soon!')
             throw new Error('unavailable')
         }
-
-        console.timeEnd('Took')
+        
         console.log('> You\'re logged in.')
+        page.waitFor(1000)
+        await page.click('div.left > a')
+        page.waitFor(2000)
     }
     
     async function navigateToAssets(page){
         await page.goto('https://novopit.clear.com.br/Operacoes/RendaVariavel/Basico', {timeout: 60000})
+
     }
     
-    async function closeChrome(chrome){
-        console.log('> Closing Google Chrome...')
-        await chrome.close()
-    }
 }
 
 module.exports = robot

@@ -10,7 +10,7 @@ async function robot(emitter,ticker){
     priceWorker.on('message', (result) => {
         try{
             if(result.indexOf(':') > -1){
-                emitter.emit('notification',result)
+                emitter.emit('notification',result[1])
             }            
         }catch(error){
             emitter.emitObject("getMovingAverage", result)

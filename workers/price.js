@@ -1,5 +1,3 @@
-const death = require('death')
-
 const {Worker, parentPort, workerData} = require('worker_threads')
 
 let stopTrade
@@ -21,29 +19,17 @@ const movingAverages = {
     mediaVenda: 0
 }
 
-death((signal, error) => {
-    resume()
-});
-
 async function price(){
 
     parentPort.on('message', async (result) =>{
         await check(result)
     })
 
-
     while(!stopTrade){
         await new Promise(resolve => setTimeout(resolve, 30000));
         parentPort.postMessage(movingAverages)
     }
 
-    resume()
-}
-
-function resume(){
-    console.log('> Stopping trade...')
-    console.log(`> Lucro total: ${lucro}`)
-    process.exit(0)
 }
 
 function check(movingAverages){
@@ -52,20 +38,20 @@ function check(movingAverages){
     mediaVenda = movingAverages.mediaVenda
     
     if(mediaCompra > mediaVenda && !comprado){
-        parentPort.postMessage(`buy:5 ${ticker} por R$${mediaCompra}`)
         console.log(`> Buy: ${mediaCompra}`)
         comprado = true
         precoComprado = mediaCompra
         numBuys++
         noBuys = 0
+        parentPort.postMessage(`buy:Compra de 5 ${ticker} por R$${mediaCompra}`)
     }
     
     if(mediaVenda > mediaCompra && comprado){
-        parentPort.postMessage(`sell:5 ${ticker} por ${mediaVenda}`)
         console.log(`> Sell: ${mediaVenda}`)
         comprado = false
         noBuys = 0
         lucro = mediaVenda - precoComprado
+        parentPort.postMessage(`sell:Venda de 5 ${ticker} por ${mediaVenda}. Lucro atualizado: ${lucro}`)
     }
     
     if(noBuys > 100){

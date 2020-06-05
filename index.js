@@ -2,10 +2,9 @@ const eventEmitter = require('./event/emitter.js')
 const robots = {
     priceChrome: require('./robots/price-chrome.js'),
     worker: require('./robots/worker.js'),
-    whatsNotification: require('./robots/whats-notification.js')
+    whatsNotification: require('./robots/whats-notification.js'),
+    clearChrome: require('./robots/clear-chrome.js')
 }
-
-
 
 const tickers = [{
     price: "BIDI4",
@@ -30,6 +29,7 @@ async function start(){
         await robots.worker(emitter, ticker)
     });
 
+    await robots.clearChrome()
 }
 
 start()
