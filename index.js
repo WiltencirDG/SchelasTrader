@@ -35,7 +35,7 @@ async function start(){
     });
     
     await robots.whatsNotification(emitters)
-    await robots.clearChrome(emitters)
+    await robots.clearChrome(emitters, tickers)
 
 
 }

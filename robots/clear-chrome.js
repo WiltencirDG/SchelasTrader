@@ -3,7 +3,7 @@ const credentials = require('../credentials/clear.json')
 const kue = require('kue')
 const queue = kue.createQueue()
 
-async function robot(emitters){
+async function robot(emitters, tickers){
     
     const chrome = await openChrome()
     const page = await openNewPage(chrome)
@@ -16,11 +16,17 @@ async function robot(emitters){
             job.save()
         })
     })
+
+    tickers.forEach((ticker) => {
+        await findAsset(page,ticker.buy)
+    })
+
     queue.process('operation', (job, done) => {
         let operation = job.data.operate.split(':')
         let message
+        let ticker = operation[1]
 
-        await findAsset(page,ticker)
+        await clickAsset(page,ticker)
 
         if(operation[0] == 'buy'){
             await buyAsset(page)
@@ -48,9 +54,7 @@ async function robot(emitters){
             '--disable-features=IsolateOrigins,site-per-process'
           ],
             headless: false,
-            defaultViewport: null,
-            // userDataDir: 'C:/Users/wilte/AppData/Local/Google/Chrome/User Data/Default',
-            // executablePath:'C:/Program Files (x86)/Google/Chrome/Application/chrome.exe'
+            defaultViewport: null
         })
         
         return chrome
@@ -125,6 +129,14 @@ async function robot(emitters){
         
         await page.waitFor(500)
 
+    }
+
+    async function clickAsset(page){
+        const frame = await page.frames().find(frame => frame.name() === 'content-page')
+        
+        await frame.click(`div > label > form > input[value="${ticker}"]`)
+        
+        await page.waitFor(1000)
     }
 
     async function buyAsset(page){
