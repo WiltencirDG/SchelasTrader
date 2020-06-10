@@ -43,7 +43,7 @@ function check(movingAverages){
         precoComprado = mediaCompra
         numBuys++
         noBuys = 0
-        parentPort.postMessage(`buy:Compra de 5 ${ticker} por R$${mediaCompra}`)
+        parentPort.postMessage(`buy:${ticker}`)
     }
     
     if(mediaVenda > mediaCompra && comprado){
@@ -51,7 +51,7 @@ function check(movingAverages){
         comprado = false
         noBuys = 0
         lucro = mediaVenda - precoComprado
-        parentPort.postMessage(`sell:Venda de 5 ${ticker} por ${mediaVenda}. Lucro atualizado: ${lucro}`)
+        parentPort.postMessage(`sell:${ticker}`)
     }
     
     if(noBuys > 100){

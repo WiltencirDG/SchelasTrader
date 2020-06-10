@@ -71,29 +71,29 @@ async function robot(emitter,ticker){
    
     async function setTickerAsActive(page){
         
-        await page.waitForSelector('iframe');
+        await page.waitForSelector('iframe')
         
-        const elementHandle = await page.$('iframe',);
-        const frame = await elementHandle.contentFrame();
+        const elementHandle = await page.$('iframe',)
+        const frame = await elementHandle.contentFrame()
 
         await page.waitFor(2000)
 
         await frame.click('span.load')
         await page.waitFor(3000)
 
-        const linkHandlers = await frame.$x("//div[contains(text(), 'LayoutBOT')]");
-        await linkHandlers[0].click();
+        const linkHandlers = await frame.$x("//div[contains(text(), 'LayoutBOT')]")
+        await linkHandlers[0].click()
 
         await page.waitFor(1000)
 
         await frame.click("input.symbol-edit")
         await frame.type("input.symbol-edit",ticker.price)
-        await page.keyboard.type(String.fromCharCode(13));
+        await page.keyboard.type(String.fromCharCode(13))
     }
 
     async function getMovingAverage(page, movingAverages){
-        const elementHandle = await page.$('iframe',);
-        const frame = await elementHandle.contentFrame();
+        const elementHandle = await page.$('iframe',)
+        const frame = await elementHandle.contentFrame()
         let mediaCompra = 0
         let mediaVenda = 0
 

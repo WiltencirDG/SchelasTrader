@@ -7,29 +7,37 @@ const robots = {
 }
 
 const tickers = [{
-    price: "BIDI4",
-    buy: "BIDI4F"
-},
-{
-    price: "PETR4",
-    buy: "PETR4F"
-},
-{
-    price: "VALE3",
-    buy: "VALE3F"
-}]
+        price: "MGLU3",
+        buy: "MGLU3F"
+    }
+    ,
+    {
+        price: "PETR4",
+        buy: "PETR4F"
+    },
+    {
+        price: "VALE3",
+        buy: "VALE3F"
+    }
+]
 
 async function start(){
+    
+    let emitters = []
     
     tickers.forEach(async (ticker) => {
         
         let emitter = new eventEmitter();
-        await robots.whatsNotification(emitter)
         await robots.priceChrome(emitter,ticker)
         await robots.worker(emitter, ticker)
+        emitters.push(emitter)
+        
     });
+    
+    await robots.whatsNotification(emitters)
+    await robots.clearChrome(emitters)
 
-    await robots.clearChrome()
+
 }
 
 start()
